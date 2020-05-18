@@ -12,9 +12,9 @@
 
 module load python/3.6
 # rm -rf env
-python3 -m venv ../env
+python3 -m venv env
 
-source ../env/bin/activate
+source env/bin/activate
 #ln -s $SLURM_TMPDIR/env temp_env_`whoami` #useful when you want to use VSCODE
 #echo $SLURM_TMPDIR
 #module load scipy-stack
