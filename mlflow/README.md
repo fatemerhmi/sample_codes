@@ -11,4 +11,4 @@ Remove the http (keep the ip and port)
 
 Put the ip and port in a local terminal in the following format:
 
-Local bash-> ssh -L :: username@cluster.servername
+Local bash-> `ssh -L :: username@cluster.servername`
