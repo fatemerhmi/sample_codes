@@ -4,6 +4,12 @@ error*
 data
 mlflow/mlruns/
 
+transformers/*
+
+#datafile
+NLP/allocine.txt
+NLP/validation.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
