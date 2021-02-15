@@ -1,0 +1,45 @@
+reader:
+  title: Reader
+  selected: twmkn9/distilbert-base-uncased-squad2
+  options:
+    - name: DistilBERT SQUAD2
+      value: twmkn9/distilbert-base-uncased-squad2
+      type: distilbert
+    - name: BERT SQUAD2
+      value: deepset/bert-base-cased-squad2
+      type: bert
+    # - name: Medical BERT SQUAD2
+    #   value: /Users/victordibia/Downloads/meddistilbert
+    #   type: bert
+
+# optional selection of samples to show in the UI
+samples:
+  - question: "what is the goal of the fourth amendment?"
+    context:
+      The Fourth Amendment of the U.S. Constitution provides that the right of
+      the people to be secure in their persons, houses, papers, and effects, against
+      unreasonable searches and seizures, shall not be violated, and no Warrants shall
+      issue, but upon probable cause, supported by Oath or affirmation, and particularly
+      describing the place to be searched, and the persons or things to be seized.'The
+      ultimate goal of this provision is to protect people’s right to privacy and freedom
+      from unreasonable intrusions by the government. However, the Fourth Amendment
+      does not guarantee protection from all searches and seizures, but only those done
+      by the government and deemed unreasonable under the law.
+  - question: Who was the first woman to serve on the supreme court in America
+    context:
+      Sandra Day O’Connor, née Sandra Day, (born March 26, 1930, El Paso, Texas,
+      U.S.), associate justice of the Supreme Court of the United States from 1981 to
+      2006. She was the first woman to serve on the Supreme Court. A moderate conservative,
+      she was known for her dispassionate and meticulously researched opinions. Sandra
+      Day grew up on a large family ranch near Duncan, Arizona. She received undergraduate
+      (1950) and law (1952) degrees from Stanford University, where she met the future
+      chief justice of the United States William Rehnquist.
+  - question: Where did Sandra Day grow up?
+    context:
+      Sandra Day O’Connor, née Sandra Day, (born March 26, 1930, El Paso, Texas,
+      U.S.), associate justice of the Supreme Court of the United States from 1981 to
+      2006. She was the first woman to serve on the Supreme Court. A moderate conservative,
+      she was known for her dispassionate and meticulously researched opinions. Sandra
+      Day grew up on a large family ranch near Duncan, Arizona. She received undergraduate
+      (1950) and law (1952) degrees from Stanford University, where she met the future
+      chief justice of the United States William Rehnquist.
