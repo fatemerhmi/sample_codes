@@ -5,7 +5,7 @@ data
 mlflow/mlruns/
 
 transformers/*
-
+.vscode/
 #datafile
 NLP/allocine.txt
 NLP/validation.txt
