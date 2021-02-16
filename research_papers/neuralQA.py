@@ -1,9 +1,16 @@
+# notes: make sure to have the same requirements
+# https://github.com/victordibia/neuralqa/blob/fb48f4d45d5856195baef25b4707e7b282cc364d/requirements.txt
+
 import tensorflow as tf
 import numpy as np
 import time
 import logging
 from transformers import AutoTokenizer, TFAutoModelForQuestionAnswering
 import yaml
+
+from pydantic import BaseModel
+from typing import Optional
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,14 +36,14 @@ class BERTReader(Reader):
         # self.load_model(model_name, model_path, model_type)
 
     def get_best_start_end_position(self, start_scores, end_scores):
-        print(start_scores)
+        # print(start_scores)
         answer_start = tf.argmax(start_scores, axis=1).numpy()[0]
         answer_end = (tf.argmax(end_scores, axis=1) + 1).numpy()[0]
         return answer_start, answer_end
 
     def get_chunk_answer_span(self, inputs):
         start_time = time.time()
-        answer_start_scores, answer_end_scores = self.model(inputs)
+        answer_start_scores, answer_end_scores = self.model(inputs) #this line is casuign a problem
 
         answer_start, answer_end = self.get_best_start_end_position(
             answer_start_scores, answer_end_scores)
@@ -286,9 +293,6 @@ class ReaderPool():
                 self._selected_model = None
 
 ##################################### Answer #####################################
-from pydantic import BaseModel
-from typing import Optional
-
 class Answer(BaseModel):
 
     max_documents: Optional[int] = 5
@@ -302,8 +306,15 @@ class Answer(BaseModel):
     expansionterms: Optional[list] = None
     retriever: Optional[str] = "manual"
 
+
+##################################### Explanation #####################################
+class Explanation(BaseModel):
+    query: str = "what is a fourth amendment right violation?"
+    context: str = "The fourth amendment kind of protects the rights of citizens .. such that they dont get searched"
+
 ##################################### main #####################################
 #--------config file---------------
+# config_file = "research_papers/config.yaml"
 config_file = "config.yaml"
 with open(config_file, 'r') as f:
         app_config = yaml.load(f, Loader=yaml.FullLoader)
@@ -311,16 +322,63 @@ with open(config_file, 'r') as f:
 print(app_config["reader"])
 reader_pool = ReaderPool(app_config["reader"])
 
-#-----------get answers---------------
-params = Answer()
-params.tokenstride = 0
-params.query = app_config.app_config["samples"][0]['question']
-params.context = app_config.app_config["samples"][0]['contex']
+#-----------get_answers(params: Answer)---------------server/routehandlers.py
 # answer question based on provided context
-answers = reader_pool.model.answer_question(params.query, params.context, stride=params.tokenstride)
-for answer in answers:
-        answer["index"] = 0
-        answer_holder.append(answer)
+def get_answers(params: Answer):
+    """
+    Used BERT Model to identify exact answer spans
+                Returns:
+                    [type] -- [description]
+    """
 
+    answer_holder = []
+    response = {}
+    start_time = time.time()
 
-#------------explain------------------
+    answers = reader_pool.model.answer_question(params.query, params.context, stride=params.tokenstride)
+    for answer in answers:
+            answer["index"] = 0
+            answer_holder.append(answer)
+
+    elapsed_time = time.time() - start_time
+    response = {"answers": answer_holder,
+                "took": elapsed_time}
+    return response
+
+params = Answer()
+# params.tokenstride = 0
+params.query = app_config["samples"][0]['question']
+params.context = app_config["samples"][0]['context']
+
+response = get_answers(params)
+print("-"*30, "GET ANSWER")
+print(response)
+
+#------------get_explanation(params: Explanation)------------------ server/routehandlers.py
+def get_explanation(params: Explanation):
+    """Return  an explanation for a given model
+    Returns:
+        [dictionary]: [explanation , query, question, ]
+    """
+
+    # TODO: Do we need to switch readers here?
+
+    context = params.context.replace(
+        "<em>", "").replace("</em>", "")
+
+    gradients, answer_text, question = reader_pool.model.explain_model(
+        params.query, context)
+
+    explanation_result = {"gradients": gradients,
+                            "answer": answer_text,
+                            "question": question
+                            }
+    return explanation_result
+
+params = Explanation()
+params.query = app_config["samples"][0]['question']
+params.context = app_config["samples"][0]['context']
+explanation_result = get_explanation(params)
+
+print("-"*30, "GET EXPLANATION")
+print(explanation_result)
